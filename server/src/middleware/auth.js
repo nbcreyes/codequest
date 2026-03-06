@@ -1,16 +1,15 @@
-// Middleware that protects routes by verifying the JWT.
-// Attaches the authenticated parent's ID to req.parentId.
+// Authentication middleware.
+// requireAuth        — validates parent JWT, attaches req.parentId
+// requireChildSession — validates child JWT, attaches req.parentId and req.childId
+// optionalAuth       — attaches parentId if token present, continues either way
 
 import { verifyToken } from "../config/jwt.js";
-import { Parent } from "../models/index.js";
+import { Parent, Child } from "../models/index.js";
 
-/**
- * Requires a valid JWT in the Authorization header.
- * Format: Authorization: Bearer <token>
- */
+// ── Parent auth ───────────────────────────────────────────────────────────
+
 export const requireAuth = async (req, res, next) => {
   try {
-    // Extract token from Authorization header
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -21,11 +20,16 @@ export const requireAuth = async (req, res, next) => {
     }
 
     const token = authHeader.split(" ")[1];
-
-    // Verify the token — throws if invalid or expired
     const decoded = verifyToken(token);
 
-    // Confirm the parent still exists and is active
+    // This middleware is for parent tokens only
+    if (decoded.role !== "parent") {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid token type. Please log in as a parent.",
+      });
+    }
+
     const parent = await Parent.findById(decoded.id).select("_id isActive isEmailVerified");
 
     if (!parent) {
@@ -49,7 +53,6 @@ export const requireAuth = async (req, res, next) => {
       });
     }
 
-    // Attach parent ID to the request for use in controllers
     req.parentId = parent._id.toString();
     next();
   } catch (error) {
@@ -59,22 +62,78 @@ export const requireAuth = async (req, res, next) => {
         message: "Your session has expired. Please log in again.",
       });
     }
-
     if (error.name === "JsonWebTokenError") {
       return res.status(401).json({
         success: false,
         message: "Invalid authentication token.",
       });
     }
-
     next(error);
   }
 };
 
-/**
- * Middleware for routes that should work whether or not the user
- * is logged in — attaches parentId if token is present, continues either way.
- */
+// ── Child session auth ────────────────────────────────────────────────────
+
+export const requireChildSession = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
+        success: false,
+        message: "No active child session. Please select a child profile.",
+      });
+    }
+
+    const token = authHeader.split(" ")[1];
+    const decoded = verifyToken(token);
+
+    // This middleware is for child session tokens only
+    if (decoded.role !== "child") {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid token type for this action.",
+      });
+    }
+
+    // Confirm the child still exists, is active, and belongs to the parent
+    const child = await Child.findOne({
+      _id: decoded.childId,
+      parent: decoded.id,
+      isActive: true,
+    }).select("_id parent firstName currentStage dailyTimeLimitMinutes");
+
+    if (!child) {
+      return res.status(401).json({
+        success: false,
+        message: "Child profile not found or no longer active.",
+      });
+    }
+
+    // Attach both IDs to the request for use in controllers
+    req.parentId = decoded.id;
+    req.childId = child._id.toString();
+    req.child = child;
+    next();
+  } catch (error) {
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({
+        success: false,
+        message: "Child session has expired. Please switch profiles again.",
+      });
+    }
+    if (error.name === "JsonWebTokenError") {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid child session token.",
+      });
+    }
+    next(error);
+  }
+};
+
+// ── Optional auth ─────────────────────────────────────────────────────────
+
 export const optionalAuth = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -88,7 +147,6 @@ export const optionalAuth = async (req, res, next) => {
     req.parentId = decoded.id;
     next();
   } catch {
-    // Token invalid or expired — just continue without attaching parentId
     next();
   }
 };
