@@ -1,17 +1,58 @@
-// App.jsx — root component, handles top-level routing
-// Routes will be built out in later steps as each feature is added
+// Root component — defines all routes and renders the toast container.
 
-function App() {
+import { Routes, Route, Navigate } from "react-router-dom";
+import ToastContainer from "@/components/ui/Toast";
+
+// Route guards
+import ProtectedRoute from "@/components/shared/ProtectedRoute";
+import ChildRoute from "@/components/shared/ChildRoute";
+import GuestRoute from "@/components/shared/GuestRoute";
+
+// Auth pages
+import RegisterPage from "@/pages/auth/RegisterPage";
+import LoginPage from "@/pages/auth/LoginPage";
+import CheckEmailPage from "@/pages/auth/CheckEmailPage";
+import VerifyEmailPage from "@/pages/auth/VerifyEmailPage";
+import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
+import ResetPasswordPage from "@/pages/auth/ResetPasswordPage";
+
+// Parent pages
+import DashboardPage from "@/pages/parent/DashboardPage";
+
+// Child pages
+import WorldMapPage from "@/pages/child/WorldMapPage";
+
+const App = () => {
   return (
-    <div className="min-h-screen bg-quest-50 font-body">
-      <h1 className="font-display text-4xl text-quest-600 text-center pt-20">
-        CodeQuest is coming
-      </h1>
-      <p className="text-center text-slate-500 mt-4">
-        Project scaffold is ready. Features will be added step by step.
-      </p>
-    </div>
+    <>
+      <Routes>
+        {/* Root redirect */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
+
+        {/* Guest-only auth routes */}
+        <Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} />
+        <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
+        <Route path="/forgot-password" element={<GuestRoute><ForgotPasswordPage /></GuestRoute>} />
+        <Route path="/reset-password/:token" element={<GuestRoute><ResetPasswordPage /></GuestRoute>} />
+
+        {/* Email flow — accessible regardless of auth state */}
+        <Route path="/check-email" element={<CheckEmailPage />} />
+        <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
+
+        {/* Protected parent routes */}
+        <Route path="/parent/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+
+        {/* Protected child session routes */}
+        <Route path="/play" element={<ChildRoute><WorldMapPage /></ChildRoute>} />
+
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+
+      {/* Toast notifications render on top of everything */}
+      <ToastContainer />
+    </>
   );
-}
+};
 
 export default App;
