@@ -1,0 +1,69 @@
+{
+  "common": {
+    "appName": "CodeQuest",
+    "loading": "Loading...",
+    "error": "Something went wrong. Please try again.",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "continue": "Continue",
+    "confirm": "Confirm",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No",
+    "or": "or"
+  },
+  "auth": {
+    "login": "Log in",
+    "logout": "Log out",
+    "register": "Create account",
+    "email": "Email address",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "forgotPassword": "Forgot password?",
+    "resetPassword": "Reset password",
+    "verifyEmail": "Verify your email",
+    "resendVerification": "Resend verification email",
+    "alreadyHaveAccount": "Already have an account?",
+    "noAccount": "Don't have an account?",
+    "emailVerificationSent": "Check your email to verify your account.",
+    "emailVerified": "Email verified! Welcome to CodeQuest.",
+    "passwordResetSent": "If that email is registered, a reset link has been sent.",
+    "passwordResetSuccess": "Password reset successfully."
+  },
+  "parent": {
+    "dashboard": "Parent Dashboard",
+    "addChild": "Add a child",
+    "myChildren": "My children",
+    "noChildren": "No child profiles yet. Add your first child to get started.",
+    "startPlaying": "Start playing as {{name}}",
+    "editProfile": "Edit profile",
+    "removeProfile": "Remove profile",
+    "timeLimit": "Daily time limit",
+    "minutes": "{{count}} minutes",
+    "noLimit": "No limit"
+  },
+  "child": {
+    "username": "Username",
+    "age": "Age",
+    "avatar": "Choose an avatar",
+    "createProfile": "Create profile",
+    "stage": "Stage",
+    "points": "Points",
+    "level": "Level",
+    "streak": "Day streak",
+    "badges": "Badges"
+  },
+  "errors": {
+    "required": "This field is required",
+    "invalidEmail": "Please enter a valid email address",
+    "passwordTooShort": "Password must be at least 8 characters",
+    "passwordMismatch": "Passwords do not match",
+    "networkError": "Cannot connect to server. Please check your connection."
+  }
+}
