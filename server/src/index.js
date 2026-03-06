@@ -7,6 +7,8 @@ import connectDatabase from "./config/database.js";
 import authRoutes from "./routes/authRoutes.js";
 import childRoutes from "./routes/childRoutes.js";
 import switchRoutes from "./routes/switchRoutes.js";
+import chapterRoutes from "./routes/chapterRoutes.js";
+import progressRoutes from "./routes/progressRoutes.js";
 import errorHandler from "./middleware/errorHandler.js";
 import { apiLimiter } from "./middleware/rateLimiter.js";
 
@@ -49,6 +51,8 @@ app.get("/api/health", (_req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/children", childRoutes);
 app.use("/api", switchRoutes);
+app.use("/api/chapters", chapterRoutes);
+app.use("/api/progress", progressRoutes);
 
 // ── 404 handler ───────────────────────────────────────────────────────────
 app.use((_req, res) => {
