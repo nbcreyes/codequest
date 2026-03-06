@@ -26,7 +26,7 @@ const STAGE_BG = {
 
 const ChapterNode = ({ chapter, progressData, index, onSelect }) => {
   const chapterProgress = progressData?.chapters?.find(
-    (cp) => cp.chapter?._id === chapter._id || cp.chapter === chapter._id
+    (cp) => cp.chapter?._id === chapter._id || cp.chapter === chapter._id,
   );
 
   const isUnlocked = chapterProgress?.isUnlocked || chapter.order === 1;
@@ -53,13 +53,15 @@ const ChapterNode = ({ chapter, progressData, index, onSelect }) => {
             : isUnlocked
               ? "border-white hover:scale-110 cursor-pointer"
               : "border-slate-600 opacity-50 cursor-not-allowed",
-          `bg-gradient-to-br ${stageGradient}`
+          `bg-gradient-to-br ${stageGradient}`,
         )}
       >
         {isCompleted ? (
           <Star className="w-10 h-10 text-gold-300 fill-gold-300" />
         ) : isUnlocked ? (
-          <span className="font-display text-3xl text-white">{chapter.order}</span>
+          <span className="font-display text-3xl text-white">
+            {chapter.order}
+          </span>
         ) : (
           <Lock className="w-8 h-8 text-slate-400" />
         )}
@@ -187,6 +189,13 @@ const WorldMapPage = () => {
         >
           Choose your next chapter
         </motion.p>
+        {/* Dev shortcut — remove in production */}
+        <button
+          onClick={() => navigate("/play/lesson/test")}
+          className="mt-4 px-6 py-2 bg-white/10 hover:bg-white/20 text-white font-body text-sm rounded-2xl transition-colors border border-white/20"
+        >
+          Test lesson (dev only)
+        </button>
       </div>
 
       {/* Chapter nodes */}

@@ -9,6 +9,7 @@ import childRoutes from "./routes/childRoutes.js";
 import switchRoutes from "./routes/switchRoutes.js";
 import chapterRoutes from "./routes/chapterRoutes.js";
 import progressRoutes from "./routes/progressRoutes.js";
+import executeRoutes from "./routes/executeRoutes.js";
 import errorHandler from "./middleware/errorHandler.js";
 import { apiLimiter } from "./middleware/rateLimiter.js";
 
@@ -53,6 +54,7 @@ app.use("/api/children", childRoutes);
 app.use("/api", switchRoutes);
 app.use("/api/chapters", chapterRoutes);
 app.use("/api/progress", progressRoutes);
+app.use("/api/execute", executeRoutes);
 
 // ── 404 handler ───────────────────────────────────────────────────────────
 app.use((_req, res) => {
