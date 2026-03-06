@@ -22,6 +22,7 @@ import DashboardPage from "@/pages/parent/DashboardPage";
 // Child pages
 import WorldMapPage from "@/pages/child/WorldMapPage";
 import ChapterPage from "@/pages/child/ChapterPage";
+import LessonPage from "@/pages/child/LessonPage";
 
 const App = () => {
   return (
@@ -46,6 +47,7 @@ const App = () => {
         {/* Protected child session routes */}
         <Route path="/play" element={<ChildRoute><WorldMapPage /></ChildRoute>} />
         <Route path="/play/chapter/:id" element={<ChildRoute><ChapterPage /></ChildRoute>} />
+        <Route path="/play/lesson/:id" element={<ChildRoute><LessonPage /></ChildRoute>} />
 
         {/* Catch-all */}
         <Route path="*" element={<Navigate to="/login" replace />} />
