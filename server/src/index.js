@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import connectDatabase from "./config/database.js";
 import authRoutes from "./routes/authRoutes.js";
 import childRoutes from "./routes/childRoutes.js";
+import switchRoutes from "./routes/switchRoutes.js";
 import errorHandler from "./middleware/errorHandler.js";
 import { apiLimiter } from "./middleware/rateLimiter.js";
 
@@ -47,6 +48,7 @@ app.get("/api/health", (_req, res) => {
 // ── Routes ────────────────────────────────────────────────────────────────
 app.use("/api/auth", authRoutes);
 app.use("/api/children", childRoutes);
+app.use("/api", switchRoutes);
 
 // ── 404 handler ───────────────────────────────────────────────────────────
 app.use((_req, res) => {

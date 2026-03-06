@@ -1,15 +1,16 @@
 // JWT signing and verification helpers.
-// Centralizing these here means the algorithm and options
-// are never duplicated across controllers.
+// Two token types are used:
+//   parent token  — issued on login, authorizes parent dashboard actions
+//   child token   — issued on child switch, scopes the kid experience to one child
 
 import jwt from "jsonwebtoken";
 
 /**
- * Signs a JWT for the given parent ID.
- * @param {string} parentId - The MongoDB _id of the parent
- * @returns {string} Signed JWT string
+ * Signs a parent JWT.
+ * @param {string} parentId
+ * @returns {string}
  */
-export const signToken = (parentId) => {
+export const signParentToken = (parentId) => {
   return jwt.sign(
     { id: parentId, role: "parent" },
     process.env.JWT_SECRET,
@@ -18,11 +19,30 @@ export const signToken = (parentId) => {
 };
 
 /**
- * Verifies a JWT and returns the decoded payload.
+ * Signs a child session JWT.
+ * Carries both parentId and childId so ownership is always verifiable.
+ * @param {string} parentId
+ * @param {string} childId
+ * @returns {string}
+ */
+export const signChildToken = (parentId, childId) => {
+  return jwt.sign(
+    { id: parentId, childId, role: "child" },
+    process.env.JWT_SECRET,
+    { expiresIn: "12h" } // Child sessions expire after 12 hours
+  );
+};
+
+/**
+ * Verifies any JWT and returns the decoded payload.
  * Throws if the token is invalid or expired.
  * @param {string} token
- * @returns {object} Decoded payload
+ * @returns {object}
  */
 export const verifyToken = (token) => {
   return jwt.verify(token, process.env.JWT_SECRET);
 };
+
+// Keep signToken as an alias for signParentToken so existing
+// auth controller code does not need to change
+export const signToken = signParentToken;
