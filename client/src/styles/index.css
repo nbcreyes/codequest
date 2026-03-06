@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: "Nunito", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #f0f6ff;
+    color: #1e293b;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Fredoka One", cursive;
+  }
+
+  code, pre, .monaco-editor {
+    font-family: "JetBrains Mono", monospace;
+  }
+}
