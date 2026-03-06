@@ -4,30 +4,58 @@ import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import connectDatabase from "./config/database.js";
+import authRoutes from "./routes/authRoutes.js";
+import errorHandler from "./middleware/errorHandler.js";
+import { apiLimiter } from "./middleware/rateLimiter.js";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Connect to MongoDB before starting the server
 connectDatabase();
 
+// ── Security ──────────────────────────────────────────────────────────────
 app.use(helmet());
 app.use(cors({
   origin: process.env.CLIENT_URL || "http://localhost:5173",
   credentials: true,
 }));
+
+// ── Request parsing ───────────────────────────────────────────────────────
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
+// ── Logging ───────────────────────────────────────────────────────────────
 if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
 }
 
+// ── Rate limiting on all API routes ──────────────────────────────────────
+app.use("/api", apiLimiter);
+
+// ── Health check ──────────────────────────────────────────────────────────
 app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok", project: "CodeQuest", timestamp: new Date().toISOString() });
+  res.json({
+    success: true,
+    project: "CodeQuest",
+    timestamp: new Date().toISOString(),
+  });
 });
+
+// ── Routes ────────────────────────────────────────────────────────────────
+app.use("/api/auth", authRoutes);
+
+// ── 404 handler ───────────────────────────────────────────────────────────
+app.use((_req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Route not found.",
+  });
+});
+
+// ── Global error handler — must be last ──────────────────────────────────
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.warn(`CodeQuest server running on port ${PORT}`);

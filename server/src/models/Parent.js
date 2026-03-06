@@ -105,23 +105,16 @@ const parentSchema = new mongoose.Schema(
 
 // ── Hooks ─────────────────────────────────────────────────────────────────
 
-// Hash the password before saving if it was modified
-parentSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-
+parentSchema.pre("save", async function () {
   const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS) || 12;
-  this.password = await bcrypt.hash(this.password, saltRounds);
-  next();
-});
 
-// Hash the PIN before saving if it was modified
-parentSchema.pre("save", async function (next) {
-  if (!this.isModified("profileSwitchPin")) return next();
-  if (!this.profileSwitchPin) return next();
+  if (this.isModified("password")) {
+    this.password = await bcrypt.hash(this.password, saltRounds);
+  }
 
-  const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS) || 12;
-  this.profileSwitchPin = await bcrypt.hash(this.profileSwitchPin, saltRounds);
-  next();
+  if (this.isModified("profileSwitchPin") && this.profileSwitchPin) {
+    this.profileSwitchPin = await bcrypt.hash(this.profileSwitchPin, saltRounds);
+  }
 });
 
 // ── Instance methods ──────────────────────────────────────────────────────
